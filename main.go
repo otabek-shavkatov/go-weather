@@ -10,8 +10,29 @@ import (
 
 func main() {
 
+	var cityCount int
+
+	// terminalda sorashlik uchun
+	fmt.Print("nechta shaxar qidirmoqchisiz ?)")
+	// scanni vazifasi kiritlganm sonni cityCount ga yozib beradi
+	fmt.Scan(&cityCount)
+
+	var cityNames []string
+	// for loop da kiritlagn shaxar sonichalik olamiz
+	for i := 0; i < cityCount; i++ {
+		var name string
+
+		//  sanoq 0 dan boshalandi shuning uchun i boyciha emas +1 qilib yuramiz terminalda korinishi joyiga
+		fmt.Printf("%d-shahar: ", i+1)
+		// kiritilgan name ni name ozgaruvchisiga yozibb beradi
+		fmt.Scan(&name)
+
+		cityNames = append(cityNames, name)
+	}
+
+	// City Struct string array qabul qiladi shuning uchun ciytName ni beruib yubrioamiz
 	cities := city.City{
-		Name: []string{"Tashkent", "Navoiy"},
+		Name: cityNames,
 	}
 
 	// buyerda kanaldan kelyapti
