@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-weather-homework/city"
 	"go-weather-homework/weather"
+	"sync"
 )
 
 func main() {
@@ -23,20 +24,36 @@ func main() {
 
 	fmt.Println(locations)
 
+	var wg sync.WaitGroup
+	weatherChannel := make(chan weather.Weather)
+
 	for _, cityLocation := range locations {
-		resultWeather := weather.GetCityWeather(cityLocation)
-		var weatherCity weather.Weather
-		fmt.Println("weatherCity ===== ", weatherCity)
-		resultJsonWeather := json.NewDecoder(resultWeather.Body).Decode(&weatherCity)
+		wg.Add(1)
+		go func(cityLocation city.Location) {
+			defer wg.Done()
 
-		if resultJsonWeather != nil {
-			fmt.Println("decode error")
-			continue
-		}
+			resultWeather := weather.GetCityWeather(cityLocation)
+			var weatherCity weather.Weather
 
-		weatherCities = append(weatherCities, weatherCity)
+			fmt.Println("weatherCity ===== ", weatherCity)
+			resultJsonWeather := json.NewDecoder(resultWeather.Body).Decode(&weatherCity)
+			resultWeather.Body.Close()
+			if resultJsonWeather != nil {
+				fmt.Println("decode error")
+				return
+			}
+			weatherChannel <- weatherCity
+
+		}(cityLocation)
 
 	}
+	go func() {
+		wg.Wait()
+		close(weatherChannel)
+	}()
 
-	// fmt.Println(weatherCities)
+	for weatherCity := range weatherChannel {
+		weatherCities = append(weatherCities, weatherCity)
+	}
+	fmt.Println(weatherCities)
 }
