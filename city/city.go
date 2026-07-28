@@ -19,30 +19,36 @@ type Location struct {
 
 func FindCityLocation(c City) []Location {
 
-	var locations []Location
+	locationChan := make(chan Location)
+	// gorountine anonymous - yani func ichida func ishlatish
+	// nima uchun aynan buyerda gorountine ishlatilyapti, chunki manashuyerda for-loopda bir nechta malumotlar aylanyapti 
+	// va ular navbat-navbat bolib ishlaydi, bularni bir vaqtda ishaltish uchun esa gorountine ishltiladi
+	go func(){
 
-	for _, name := range c.Name {
-		url := "https://geocode.maps.co/search?city=" + name + "&api_key=6a6797bc4c7d4603243282kgsaf9cd9"
+		for _, name := range c.Name {
+			url := "https://geocode.maps.co/search?city=" + name + "&api_key=6a6797bc4c7d4603243282kgsaf9cd9"
 
-		response, err := http.Get(url)
+			response, err := http.Get(url)
 
-		defer response.Body.Close()
+			defer response.Body.Close()
 
-		if err != nil {
-			break
+			if err != nil {
+				break
+			}
+
+			var location []Location
+
+			resultJsonApi := json.NewDecoder(response.Body).Decode(&result)
+
+			if resultJsonApi != nil {
+				fmt.Println("erro decode json")
+				break
+			}
+
+			locationChan<- location[]
 		}
 
-		var result []Location
-
-		resultJsonApi := json.NewDecoder(response.Body).Decode(&result)
-
-		if resultJsonApi != nil {
-			fmt.Println("erro decode json")
-			break
-		}
-		locations = append(locations, result...)
 	}
 
-	return locations
 
 }
