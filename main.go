@@ -13,11 +13,13 @@ func main() {
 	cities := city.City{
 		Name: []string{"Tashkent", "Navoiy"},
 	}
+
+	// buyerda kanaldan kelyapti
 	resultLocationCity := city.FindCityLocation(cities)
 
 	var locations []city.Location
 	var weatherCities []weather.Weather
-
+	// kanaldagilarni bittalab arrayga yigamiz
 	for location := range resultLocationCity {
 		locations = append(locations, location)
 	}
@@ -26,7 +28,7 @@ func main() {
 
 	var wg sync.WaitGroup
 	weatherChannel := make(chan weather.Weather)
-
+	// weather api ni ham paralel ishaltish uchun gorountine ishlatamiz buyerda ham chunki bizda shaxar nomlari paralel kelgani bilan weatherga bittalab bir birini kutib boryapti, shuning uchun ularga ham kanal ochamiz
 	for _, cityLocation := range locations {
 		wg.Add(1)
 		go func(cityLocation city.Location) {
