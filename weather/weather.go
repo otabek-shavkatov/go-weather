@@ -21,6 +21,7 @@ func GetCityWeather(l city.Location) *http.Response {
 	weatherUrl := "https://api.openweathermap.org/data/2.5/weather" +
 		"?lat=" + l.Lat +
 		"&lon=" + l.Lon +
+		"&units=metric" +
 		"&appid=8857272b48c13776ef7c9b3cb0f5e3bf"
 	fmt.Println(weatherUrl)
 	response, err := http.Get(weatherUrl)
