@@ -45,7 +45,7 @@ func main() {
 		locations = append(locations, location)
 	}
 
-	fmt.Println(locations)
+	// fmt.Println(locations)
 
 	var wg sync.WaitGroup
 	weatherChannel := make(chan weather.Weather)
@@ -58,7 +58,7 @@ func main() {
 			resultWeather := weather.GetCityWeather(cityLocation)
 			var weatherCity weather.Weather
 
-			fmt.Println("weatherCity ===== ", weatherCity)
+			// fmt.Println("weatherCity ===== ", weatherCity)
 			resultJsonWeather := json.NewDecoder(resultWeather.Body).Decode(&weatherCity)
 			resultWeather.Body.Close()
 			if resultJsonWeather != nil {
