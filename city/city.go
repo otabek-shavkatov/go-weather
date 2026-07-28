@@ -17,7 +17,7 @@ type Location struct {
 	DisplayName string `json:"display_name"`
 }
 
-func FindCityLocation(c City) {
+func FindCityLocation(c City) []Location {
 
 	var locations []Location
 
@@ -29,8 +29,7 @@ func FindCityLocation(c City) {
 		defer response.Body.Close()
 
 		if err != nil {
-
-			return
+			break
 		}
 
 		var result []Location
@@ -39,9 +38,11 @@ func FindCityLocation(c City) {
 
 		if resultJsonApi != nil {
 			fmt.Println("erro decode json")
-			return
+			break
 		}
 		locations = append(locations, result...)
 	}
+
+	return locations
 
 }
