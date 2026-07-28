@@ -14,14 +14,20 @@ func main() {
 	}
 	resultLocationCity := city.FindCityLocation(cities)
 
+	var locations []city.Location
 	var weatherCities []weather.Weather
-	for _, cityLocation := range resultLocationCity {
+
+	for location := range resultLocationCity {
+		locations = append(locations, location)
+	}
+
+	fmt.Println(locations)
+
+	for _, cityLocation := range locations {
 		resultWeather := weather.GetCityWeather(cityLocation)
 		var weatherCity weather.Weather
 		fmt.Println("weatherCity ===== ", weatherCity)
 		resultJsonWeather := json.NewDecoder(resultWeather.Body).Decode(&weatherCity)
-
-		defer resultWeather.Body.Close()
 
 		if resultJsonWeather != nil {
 			fmt.Println("decode error")
@@ -32,5 +38,5 @@ func main() {
 
 	}
 
-	fmt.Println(weatherCities)
+	// fmt.Println(weatherCities)
 }

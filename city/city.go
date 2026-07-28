@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 )
 
 type City struct {
@@ -20,12 +21,15 @@ type Location struct {
 func FindCityLocation(c City) <-chan Location {
 
 	locationChan := make(chan Location)
+	var wg sync.WaitGroup
 	// gorountine anonymous - yani func ichida func ishlatish
 	// nima uchun aynan buyerda gorountine ishlatilyapti, chunki manashuyerda for-loopda bir nechta malumotlar aylanyapti
 	// va ular navbat-navbat bolib ishlaydi, bularni bir vaqtda ishaltish uchun esa gorountine ishltiladi
 
 	for _, name := range c.Name {
+		wg.Add(1)
 		go func(name string) {
+			defer wg.Done()
 			url := "https://geocode.maps.co/search?city=" + name + "&api_key=6a6797bc4c7d4603243282kgsaf9cd9"
 
 			response, err := http.Get(url)
@@ -49,5 +53,9 @@ func FindCityLocation(c City) <-chan Location {
 		}(name)
 
 	}
+	go func() {
+		wg.Wait()
+		close(locationChan)
+	}()
 	return locationChan
 }
