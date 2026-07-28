@@ -17,38 +17,37 @@ type Location struct {
 	DisplayName string `json:"display_name"`
 }
 
-func FindCityLocation(c City) []Location {
+func FindCityLocation(c City) <-chan Location {
 
 	locationChan := make(chan Location)
 	// gorountine anonymous - yani func ichida func ishlatish
-	// nima uchun aynan buyerda gorountine ishlatilyapti, chunki manashuyerda for-loopda bir nechta malumotlar aylanyapti 
+	// nima uchun aynan buyerda gorountine ishlatilyapti, chunki manashuyerda for-loopda bir nechta malumotlar aylanyapti
 	// va ular navbat-navbat bolib ishlaydi, bularni bir vaqtda ishaltish uchun esa gorountine ishltiladi
-	go func(){
 
-		for _, name := range c.Name {
+	for _, name := range c.Name {
+		go func(name string) {
 			url := "https://geocode.maps.co/search?city=" + name + "&api_key=6a6797bc4c7d4603243282kgsaf9cd9"
 
 			response, err := http.Get(url)
 
+			if err != nil {
+				return
+			}
 			defer response.Body.Close()
 
-			if err != nil {
-				break
-			}
+			var locations []Location
 
-			var location []Location
-
-			resultJsonApi := json.NewDecoder(response.Body).Decode(&result)
+			resultJsonApi := json.NewDecoder(response.Body).Decode(&locations)
 
 			if resultJsonApi != nil {
 				fmt.Println("erro decode json")
-				break
+			}
+			for _, location := range locations {
+				locationChan <- location
 			}
 
-			locationChan<- location[]
-		}
+		}(name)
 
 	}
-
-
+	return locationChan
 }
