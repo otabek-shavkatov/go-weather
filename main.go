@@ -7,6 +7,6 @@ import (
 
 func main() {
 
-	cities := city.City{Name: "tashkent"}
+	cities := city.City{Name: "Tashkent"}
 	weather.FindCityLocation(cities)
 }
